@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: soundlist
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/soundlist_db
+    username: user
+    password: mypassword123
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
