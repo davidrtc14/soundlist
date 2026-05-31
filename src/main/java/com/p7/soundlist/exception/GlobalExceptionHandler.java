@@ -38,4 +38,11 @@ public class GlobalExceptionHandler {
         errors.put("message", exception.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ExceptionResponseDto("500", errors, LocalDateTime.now()));
     }
+
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ExceptionResponseDto> handleBusinessError(BusinessException exception){
+        Map<String, String> errors = new HashMap<>();
+        errors.put("message", exception.getMessage());
+        return ResponseEntity.badRequest().body(new ExceptionResponseDto("400", errors, LocalDateTime.now()));
+    }
 }
