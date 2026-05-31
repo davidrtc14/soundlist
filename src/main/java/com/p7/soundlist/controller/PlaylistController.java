@@ -1,5 +1,6 @@
 package com.p7.soundlist.controller;
 
+import com.p7.soundlist.dtos.PlaylistPatchDto;
 import com.p7.soundlist.dtos.PlaylistRequestDto;
 import com.p7.soundlist.dtos.PlaylistResponseDto;
 import com.p7.soundlist.service.PlaylistService;
@@ -9,7 +10,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.Optional;
 
 @RestController
@@ -33,6 +36,29 @@ public class PlaylistController {
     @PostMapping
     public ResponseEntity<PlaylistResponseDto> createPlaylist(@RequestBody @Valid PlaylistRequestDto playlistRequestDto) {
         var createdPlaylist = playlistService.create(playlistRequestDto);
-        return ResponseEntity.ok(createdPlaylist);
+
+        URI uri = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(createdPlaylist.id())
+                .toUri();
+
+        return ResponseEntity.created(uri).body(createdPlaylist);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<PlaylistResponseDto> updatePlaylist(@PathVariable Long id, @RequestBody @Valid PlaylistRequestDto playlistRequestDto){
+        return ResponseEntity.ok(playlistService.update(id, playlistRequestDto));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<PlaylistResponseDto> patchPlaylist(@PathVariable Long id, @RequestBody PlaylistPatchDto playlistPatchDto){
+        return ResponseEntity.ok(playlistService.patch(id, playlistPatchDto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePlaylist(@PathVariable Long id){
+        playlistService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
