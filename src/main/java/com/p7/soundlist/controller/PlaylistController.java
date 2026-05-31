@@ -1,5 +1,6 @@
 package com.p7.soundlist.controller;
 
+import com.p7.soundlist.dtos.MusicResponseDto;
 import com.p7.soundlist.dtos.PlaylistPatchDto;
 import com.p7.soundlist.dtos.PlaylistRequestDto;
 import com.p7.soundlist.dtos.PlaylistResponseDto;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/playlists")
@@ -31,6 +31,11 @@ public class PlaylistController {
     public ResponseEntity<PlaylistResponseDto> getPlaylistById(@PathVariable Long id) {
         PlaylistResponseDto playlistResponse = playlistService.getById(id);
         return ResponseEntity.ok(playlistResponse);
+    }
+
+    @GetMapping("/{id}/musics")
+    public ResponseEntity<Page<MusicResponseDto>> getMusicsByPlaylistId(@PathVariable Long id, Pageable pageable) {
+        return ResponseEntity.ok(playlistService.getMusicsByPlaylist(id, pageable));
     }
 
     @PostMapping
