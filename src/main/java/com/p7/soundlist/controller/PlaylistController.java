@@ -10,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/playlists")
 @RequiredArgsConstructor
@@ -20,6 +22,12 @@ public class PlaylistController {
     public ResponseEntity<Page<PlaylistResponseDto>> getAllPlaylists(Pageable pageable) {
         var playlists = playlistService.getAll(pageable);
         return ResponseEntity.ok(playlists);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PlaylistResponseDto> getPlaylistById(@PathVariable Long id) {
+        PlaylistResponseDto playlistResponse = playlistService.getById(id);
+        return ResponseEntity.ok(playlistResponse);
     }
 
     @PostMapping
