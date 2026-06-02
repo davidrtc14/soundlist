@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -17,7 +18,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 
 @RestController
-@RequestMapping("/musics")
+@RequestMapping("api/musics")
 @RequiredArgsConstructor
 @Tag(
         name = "Músicas",
@@ -27,7 +28,7 @@ public class MusicController {
     private final MusicService musicService;
 
     @GetMapping
-    public ResponseEntity<Page<MusicResponseDto>> getAllMusics(Pageable pageable) {
+    public ResponseEntity<Page<MusicResponseDto>> getAllMusics(@PageableDefault(size = 2) Pageable pageable) {
         var songs = musicService.getAll(pageable);
         return ResponseEntity.ok(songs);
     }

@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -18,7 +19,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 
 @RestController
-@RequestMapping("/playlists")
+@RequestMapping("api/playlists")
 @RequiredArgsConstructor
 @Tag(
         name = "Playlists",
@@ -28,7 +29,7 @@ public class PlaylistController {
     private final PlaylistService playlistService;
 
     @GetMapping
-    public ResponseEntity<Page<PlaylistResponseDto>> getAllPlaylists(Pageable pageable) {
+    public ResponseEntity<Page<PlaylistResponseDto>> getAllPlaylists(@PageableDefault(size = 2) Pageable pageable) {
         var playlists = playlistService.getAll(pageable);
         return ResponseEntity.ok(playlists);
     }
@@ -40,7 +41,7 @@ public class PlaylistController {
     }
 
     @GetMapping("/{id}/musics")
-    public ResponseEntity<Page<MusicResponseDto>> getMusicsByPlaylistId(@PathVariable Long id, Pageable pageable) {
+    public ResponseEntity<Page<MusicResponseDto>> getMusicsByPlaylistId(@PathVariable Long id, @PageableDefault(size = 2)  Pageable pageable) {
         return ResponseEntity.ok(playlistService.getMusicsByPlaylist(id, pageable));
     }
 

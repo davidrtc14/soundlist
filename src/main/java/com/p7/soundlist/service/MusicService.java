@@ -3,7 +3,6 @@ package com.p7.soundlist.service;
 import com.p7.soundlist.dtos.MusicPatchRequestDto;
 import com.p7.soundlist.dtos.MusicRequestDto;
 import com.p7.soundlist.dtos.MusicResponseDto;
-import com.p7.soundlist.dtos.PlaylistResponseDto;
 import com.p7.soundlist.exception.BusinessException;
 import com.p7.soundlist.mapper.MusicMapper;
 import com.p7.soundlist.model.Music;
