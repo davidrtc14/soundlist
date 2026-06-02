@@ -5,12 +5,11 @@ import com.p7.soundlist.dtos.PlaylistPatchDto;
 import com.p7.soundlist.dtos.PlaylistRequestDto;
 import com.p7.soundlist.dtos.PlaylistResponseDto;
 import com.p7.soundlist.exception.BusinessException;
-import com.p7.soundlist.mapper.MusicMapper;
 import com.p7.soundlist.mapper.PlaylistMapper;
 import com.p7.soundlist.model.Playlist;
-import com.p7.soundlist.repository.MusicRepository;
 import com.p7.soundlist.repository.PlaylistRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,18 +19,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PlaylistService {
     private final PlaylistRepository playlistRepository;
-    private final MusicRepository musicRepository;
-    private final MusicMapper musicMapper;
     private final PlaylistMapper playlistMapper;
+    private final MusicService musicService;
 
     //select * from playlists
     public Page<PlaylistResponseDto> getAll(Pageable pageable){
         var playlists = playlistRepository.findAll(pageable);
-
-        if(playlists.stream().count() == 0){
-            throw new EntityNotFoundException("Nenhuma playlist encontrada");
-        }
-
         return playlists.map(playlistMapper::toDto);
     }
 
@@ -46,15 +39,11 @@ public class PlaylistService {
         playlistRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Playlist não encontrada com id: " + id));
 
-        var playlistSongs = musicRepository.findByPlaylistId(id, pageable);
-        if(playlistSongs.stream().count() == 0){
-            throw new EntityNotFoundException("Nenhuma música encontrada para a playlist com id: " + id);
-        }
-
-        return playlistSongs.map(musicMapper::toDto);
+        return musicService.getByPlaylistId(id, pageable);
     }
 
     //save
+    @Transactional
     public PlaylistResponseDto create(PlaylistRequestDto playlistRequestDto){
         var playlist = playlistMapper.toEntity(playlistRequestDto);
         var savedPlaylist = playlistRepository.save(playlist);
@@ -62,6 +51,7 @@ public class PlaylistService {
     }
 
     //put
+    @Transactional
     public PlaylistResponseDto update(Long id, PlaylistRequestDto playlistRequestDto){
         Playlist playlist = playlistRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Playlist não encontrada"));
 
@@ -72,6 +62,7 @@ public class PlaylistService {
     }
 
     //patch
+    @Transactional
     public  PlaylistResponseDto patch(Long id, PlaylistPatchDto playlistPatchDto){
         if (playlistPatchDto.name() == null && playlistPatchDto.description() == null) {
             throw new BusinessException("Ao menos um campo deve ser informado para atualização");
@@ -92,6 +83,7 @@ public class PlaylistService {
     }
 
     //delete
+    @Transactional
     public void delete(Long id){
         Playlist playlist = playlistRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Playlist não encontrada"));
         playlistRepository.delete(playlist);

@@ -18,7 +18,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 
 @RestController
-@RequestMapping("api/musics")
+@RequestMapping("/api/musics")
 @RequiredArgsConstructor
 @Tag(
         name = "Músicas",
@@ -58,7 +58,7 @@ public class MusicController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<MusicResponseDto> patchMusic(@PathVariable Long id, @RequestBody MusicPatchRequestDto musicPatchRequestDto){
+    public ResponseEntity<MusicResponseDto> patchMusic(@PathVariable Long id, @RequestBody @Valid MusicPatchRequestDto musicPatchRequestDto){
         return ResponseEntity.ok(musicService.patch(id, musicPatchRequestDto));
     }
 

@@ -1,8 +1,6 @@
 package com.p7.soundlist.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Entity
@@ -17,16 +15,16 @@ public class Music {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "O título é obrigatório")
+    @Column(nullable = false)
     private String title;
 
-    @NotBlank(message = "O artista é obrigatório")
+    @Column(nullable = false)
     private String artist;
 
     @Column(length = 64)
     private String genre;
 
-    @NotNull(message = "A duração é obrigatória")
+    @Column(nullable = false)
     private Integer duration;
 
     @ManyToOne

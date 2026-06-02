@@ -10,7 +10,11 @@ import com.p7.soundlist.model.Playlist;
 import com.p7.soundlist.repository.MusicRepository;
 import com.p7.soundlist.repository.PlaylistRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,11 +29,6 @@ public class MusicService {
     //select * from music
     public Page<MusicResponseDto> getAll(Pageable pageable){
         var songs = musicRepository.findAll(pageable);
-
-        if(songs.stream().count() == 0){
-            throw new EntityNotFoundException("Nenhuma música encontrada");
-        }
-
         return songs.map(mapper::toDto);
     }
 
@@ -37,6 +36,11 @@ public class MusicService {
     public MusicResponseDto getById(Long id){
         var selectedSong = musicRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Música não encontrada"));
         return mapper.toDto(selectedSong);
+    }
+
+    public Page<MusicResponseDto> getByPlaylistId(Long playlistId, Pageable pageable) {
+        return musicRepository.findByPlaylistId(playlistId, pageable)
+                .map(mapper::toDto);
     }
 
     //save
@@ -49,6 +53,7 @@ public class MusicService {
     }
 
     //put
+    @Transactional
     public MusicResponseDto update(Long id, MusicRequestDto musicRequestDto){
         Music music = musicRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Música não encontrada"));
         Playlist playlist = playlistRepository.findById(musicRequestDto.playlistId()).orElseThrow(() -> new EntityNotFoundException("Playlist não encontrada"));
@@ -63,11 +68,19 @@ public class MusicService {
     }
 
     //patch
+    @Transactional
     public MusicResponseDto patch(Long id, MusicPatchRequestDto musicPatchRequestDto){
         Music music = musicRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Música não encontrada"));
 
         if(musicPatchRequestDto.title() == null && musicPatchRequestDto.artist() == null && musicPatchRequestDto.genre() == null && musicPatchRequestDto.duration() == null && musicPatchRequestDto.playlistId() == null){
             throw new BusinessException("Ao menos um campo deve ser informado para atualização");
+        }
+
+        if (musicPatchRequestDto.title() != null && musicPatchRequestDto.title().isBlank()) {
+            throw new BusinessException("Título não pode ser vazio");
+        }
+        if (musicPatchRequestDto.artist() != null && musicPatchRequestDto.artist().isBlank()) {
+            throw new BusinessException("Artista não pode ser vazio");
         }
 
         if (musicPatchRequestDto.title() != null) {
@@ -91,6 +104,7 @@ public class MusicService {
     }
 
     //delete
+    @Transactional
     public void delete(Long id){
         Music music = musicRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Música não encontrada"));
         musicRepository.delete(music);

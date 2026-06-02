@@ -19,7 +19,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 
 @RestController
-@RequestMapping("api/playlists")
+@RequestMapping("/api/playlists")
 @RequiredArgsConstructor
 @Tag(
         name = "Playlists",
@@ -64,7 +64,7 @@ public class PlaylistController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<PlaylistResponseDto> patchPlaylist(@PathVariable Long id, @RequestBody PlaylistPatchDto playlistPatchDto){
+    public ResponseEntity<PlaylistResponseDto> patchPlaylist(@PathVariable Long id, @RequestBody @Valid PlaylistPatchDto playlistPatchDto){
         return ResponseEntity.ok(playlistService.patch(id, playlistPatchDto));
     }
 
