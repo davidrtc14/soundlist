@@ -4,6 +4,8 @@ import com.p7.soundlist.dtos.MusicPatchRequestDto;
 import com.p7.soundlist.dtos.MusicRequestDto;
 import com.p7.soundlist.dtos.MusicResponseDto;
 import com.p7.soundlist.service.MusicService;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,6 +19,10 @@ import java.net.URI;
 @RestController
 @RequestMapping("/musics")
 @RequiredArgsConstructor
+@Tag(
+        name = "Músicas",
+        description = "Operações relacionadas às músicas"
+)
 public class MusicController {
     private final MusicService musicService;
 

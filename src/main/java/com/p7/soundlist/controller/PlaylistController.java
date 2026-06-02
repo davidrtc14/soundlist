@@ -5,6 +5,8 @@ import com.p7.soundlist.dtos.PlaylistPatchDto;
 import com.p7.soundlist.dtos.PlaylistRequestDto;
 import com.p7.soundlist.dtos.PlaylistResponseDto;
 import com.p7.soundlist.service.PlaylistService;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,6 +20,10 @@ import java.net.URI;
 @RestController
 @RequestMapping("/playlists")
 @RequiredArgsConstructor
+@Tag(
+        name = "Playlists",
+        description = "Operações relacionadas às playlists"
+)
 public class PlaylistController {
     private final PlaylistService playlistService;
 

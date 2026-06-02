@@ -2,6 +2,7 @@ package com.p7.soundlist.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Entity
@@ -25,7 +26,7 @@ public class Music {
     @Column(length = 64)
     private String genre;
 
-    @NotBlank(message = "A duraçaõ é obrigatória")
+    @NotNull(message = "A duração é obrigatória")
     private Integer duration;
 
     @ManyToOne
