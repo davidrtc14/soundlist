@@ -1,9 +1,11 @@
 package com.p7.soundlist.exception;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.p7.soundlist.dtos.ExceptionResponseDto;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,6 +16,40 @@ import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ExceptionResponseDto> handleHttpMessageNotReadable(HttpMessageNotReadableException exception) {
+        Map<String, String> errors = new HashMap<>();
+
+        Map<String, String> tipoAmigavel = Map.of(
+            "Integer", "número inteiro",
+            "Long",    "número inteiro",
+            "Double",  "número decimal",
+            "Boolean", "verdadeiro ou falso",
+            "LocalDate", "data (yyyy-MM-dd)"
+        );
+
+        Throwable cause = exception.getCause();
+
+        if (cause instanceof InvalidFormatException invalidFormat) {
+
+            String campo = invalidFormat.getPath().isEmpty()
+                    ? "desconhecido"
+                    : invalidFormat.getPath().get(0).getFieldName();
+            
+            String tipoEsperado = tipoAmigavel.getOrDefault(
+                invalidFormat.getTargetType().getSimpleName(),
+                invalidFormat.getTargetType().getSimpleName()
+            );
+
+            errors.put(campo, "Valor inválido para o campo '" + campo + "': esperado " + tipoEsperado);
+        } else {
+            errors.put("message", "Requisição com formato inválido");
+        }
+
+        return ResponseEntity.badRequest()
+                .body(new ExceptionResponseDto("400", errors, LocalDateTime.now()));
+    }
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ExceptionResponseDto> handleEntityNotFoundException(EntityNotFoundException exception){
