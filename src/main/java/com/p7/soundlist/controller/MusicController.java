@@ -15,7 +15,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 
 @RestController
-@RequestMapping("/musics")
+@RequestMapping("/api/musics")
 @RequiredArgsConstructor
 public class MusicController {
     private final MusicService musicService;
